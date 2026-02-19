@@ -31,7 +31,7 @@ Dataset: - **SQuAD v1 (validation subset of 500 samples)**
 Clone the repository:
 
 ``` bash
-git clone https://github.com/your-username/confidence-correctness-mismatch.git
+git clone https://github.com/TheSkyBiz/confidence-correctness-mismatch.git
 cd confidence-correctness-mismatch
 ```
 
@@ -105,29 +105,55 @@ Evaluates:
 
 ------------------------------------------------------------------------
 
-## Quantitative Summary
+# 📊 Quantitative Summary
 
-### Base Model Comparison (500 samples)
+## Base Model Comparison (500 Samples)
 
-  Metric                DistilBERT   RoBERTa
-  --------------------- ------------ ---------
-  Accuracy              \~0.70       \~0.926
-  Overconfidence Rate   0.112        0.016
-  Weighted ECE          \~0.11       \~0.227
+| Metric                  | DistilBERT | RoBERTa |
+|--------------------------|------------|----------|
+| **Accuracy**             | ~0.70      | ~0.926   |
+| **Overconfidence Rate**  | 0.112      | 0.016    |
+| **Weighted ECE**         | ~0.11      | ~0.227   |
 
-------------------------------------------------------------------------
+### Interpretation
 
-### Temperature Sweep (RoBERTa)
+- **RoBERTa** achieves significantly higher accuracy.
+- **DistilBERT** exhibits substantially higher overconfidence.
+- RoBERTa starts slightly underconfident but is more calibratable.
+- Accuracy alone does **not** imply better calibration.
 
-  T     ECE     Overconfidence
-  ----- ------- ----------------
-  0.6   0.107   0.032
-  0.7   0.118   0.028
-  0.8   0.147   0.026
-  1.0   0.218   0.016
-  1.2   0.298   0.010
+---
 
-**Recommended deployment setting: T ≈ 0.8**
+## Temperature Sweep (RoBERTa)
+
+Temperature scaling was applied by dividing start and end logits by **T** before softmax.
+
+| Temperature (T) | ECE   | Overconfidence |
+|------------------|-------|----------------|
+| 0.6              | 0.107 | 0.032          |
+| 0.7              | 0.118 | 0.028          |
+| 0.8              | 0.147 | 0.026          |
+| 1.0              | 0.218 | 0.016          |
+| 1.2              | 0.298 | 0.010          |
+
+### Observations
+
+- Lower **T** sharpens logits → reduces ECE (better calibration).
+- However, sharpening increases overconfidence risk.
+- Higher **T** smooths confidence but worsens calibration.
+- Calibration and overconfidence form a measurable tradeoff.
+
+---
+
+## Deployment Recommendation
+
+**Recommended setting: T ≈ 0.8**
+
+This provides:
+
+- Significant ECE improvement
+- Controlled overconfidence increase
+- Strong threshold-based deployability
 
 ------------------------------------------------------------------------
 
